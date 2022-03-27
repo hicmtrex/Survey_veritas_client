@@ -6,7 +6,7 @@ import store from './store';
 import router from './router';
 
 const axiosClient = axios.create({
-  baseURL: `${process.env.VITE_API_BASE_URL}/api`,
+  baseURL: 'https://survey-veritas.herokuapp.com/api',
 });
 
 axiosClient.interceptors.request.use((config) => {
