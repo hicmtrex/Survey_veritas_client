@@ -20,15 +20,27 @@
     </p>
 
     <form class="mt-8 space-y-6" @submit="register">
-      <Alert
-        v-if="Object.keys(errors).length"
-        class="flex-col items-stretch text-sm"
-      >
-        <div v-for="(field, i) of Object.keys(errors)" :key="i">
-          <div v-for="(error, ind) of errors[field] || []" :key="ind">
-            * {{ error }}
-          </div>
-        </div>
+      <Alert v-if="errors">
+        {{ errors }}
+        <span
+          @click="errors = null"
+          class="w-8 h-8 flex items-center justify-center rounded-full transition-colors cursor-pointer hover:bg-[rgba(0,0,0,0.2)]"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </span>
       </Alert>
 
       <input type="hidden" name="remember" value="true" />
@@ -56,7 +68,6 @@
             required
             v-model="user.email"
             class="auth__input mb-2"
-            :class="{ 'border-red-500': errors.email, 'z-10': errors.email }"
             placeholder="Email address"
           />
         </div>
@@ -71,10 +82,6 @@
             v-model="user.password"
             class="auth__input mb-2"
             placeholder="Password"
-            :class="{
-              'border-red-500': errors.password,
-              'z-10': errors.password,
-            }"
           />
         </div>
         <div>
@@ -142,6 +149,9 @@ import { LockClosedIcon } from '@heroicons/vue/solid';
 import store from '../store';
 import { useRouter } from 'vue-router';
 import Alert from '../components/Alert.vue';
+import { useToast } from 'vue-toastification';
+
+const toast = useToast();
 
 const router = useRouter();
 const user = {
@@ -150,7 +160,7 @@ const user = {
   password: '',
 };
 const loading = ref(false);
-const errors = ref({});
+const errors = ref(null);
 
 function register(ev) {
   ev.preventDefault();
@@ -162,12 +172,11 @@ function register(ev) {
       router.push({
         name: 'Dashboard',
       });
+      toast.success('you have been registred');
     })
     .catch((error) => {
       loading.value = false;
-      if (error.response.status === 422) {
-        errors.value = error.response.data.errors;
-      }
+      errors.value = 'invalid input!';
     });
 }
 </script>
